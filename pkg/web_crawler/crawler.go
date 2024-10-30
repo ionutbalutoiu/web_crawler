@@ -22,7 +22,7 @@ type Crawler struct {
 
 // NewCrawler creates a new web crawler instance.
 func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser) (*Crawler, error) {
-	baseUrlParsed, err := url.Parse(baseUrl)
+	baseUrlParsed, err := url.ParseRequestURI(baseUrl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse base url: %v", err)
 	}
@@ -45,12 +45,15 @@ func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser
 	return crawler, nil
 }
 
-// GetCrawledPages returns the list of crawled pages from the base url.
-func (c *Crawler) GetCrawledPages() []string {
+// StartCrawling starts the web crawling process.
+func (c *Crawler) StartCrawling() {
 	c.wg.Add(1)
 	go c.crawl(c.baseUrl, c.depth)
 	c.wg.Wait()
+}
 
+// GetCrawledPages returns the list of crawled pages from the base url.
+func (c *Crawler) GetCrawledPages() []string {
 	return c.crawledPages.GetItems()
 }
 
@@ -98,19 +101,30 @@ func (c *Crawler) getSanitizedLinks(links []string) []string {
 // from the same domain. If the link doesn't meet these conditions, it's
 // considered invalid and an empty string is returned.
 func (c *Crawler) sanitizeLink(link string) string {
+	// NOTE: "url.Parse" provides a weaker URL parsing than "url.ParseRequestURI".
+	// We will use this to determine if the link is relative or absolute.
 	linkParsed, err := url.Parse(link)
 	if err != nil {
-		log.Warnf("failed to parse link: %v", err)
+		log.Warnf("link %s failed url.Parse: %v", link, err)
 		return ""
 	}
 
+	// If the link is relative, we will join it with the base url.
 	if !linkParsed.IsAbs() {
-		link, err := url.JoinPath(c.baseUrl, link)
+		link, err = url.JoinPath(c.baseUrl, link)
 		if err != nil {
 			log.Warnf("failed to join url %s with %s: %v", c.baseUrl, link, err)
 			return ""
 		}
-		return link
+	}
+
+	// NOTE: This is a stronger URL parsing than "url.Parse". We will use this
+	// to validate that we are only crawling links from the same domain.
+	// It also provides a better way to validate that we have a valid link.
+	linkParsed, err = url.ParseRequestURI(link)
+	if err != nil {
+		log.Warnf("link %s failed url.ParseRequestURI: %v", link, err)
+		return ""
 	}
 
 	domain, err := GetHostDomain(linkParsed.Host)

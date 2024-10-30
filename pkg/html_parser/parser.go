@@ -44,9 +44,9 @@ func (p *WebHTMLParser) getHrefAttrValue(htmlNode *html.Node) string {
 func (p *WebHTMLParser) getHTMLDocLinks(htmlNode *html.Node) []string {
 	links := []string{}
 	if htmlNode.Data == HTMLTagLink {
-		hrefAttr := p.getHrefAttrValue(htmlNode)
-		if !slices.Contains(links, hrefAttr) {
-			links = append(links, hrefAttr)
+		hrefValue := p.getHrefAttrValue(htmlNode)
+		if !slices.Contains(links, hrefValue) {
+			links = append(links, hrefValue)
 		}
 	}
 	for child := htmlNode.FirstChild; child != nil; child = child.NextSibling {

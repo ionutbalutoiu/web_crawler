@@ -40,10 +40,10 @@ func main() {
 	}
 
 	fmt.Printf("Crawling page %s with depth %d\n", *baseUrl, *depth)
-	crawledPagesLinks := webCrawler.GetCrawledPages()
+	webCrawler.StartCrawling()
 
 	fmt.Println("Links crawled:")
-	for _, link := range crawledPagesLinks {
+	for _, link := range webCrawler.GetCrawledPages() {
 		fmt.Println(link)
 	}
 }
