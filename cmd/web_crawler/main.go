@@ -13,12 +13,12 @@ import (
 var (
 	baseUrl      = flag.String("url", "https://monzo.com", "Base URL to crawl (default: https://monzo.com)")
 	depth        = flag.Uint("depth", 3, "Crawl depth (default: 3)")
-	logLevel     = flag.String("log-level", "info", "Log level")
-	outputFormat = flag.String("output", "json", "Output format (default: json). Valid values json, plaintext")
+	logLevel     = flag.String("log-level", "info", "Log level (default: info). Valid values: trace, debug, info, warn, error, fatal, panic")
+	outputFormat = flag.String("output", "json", "Output format (default: json). Valid values: json, plaintext")
 )
 
-func initLogging() error {
-	lvl, err := log.ParseLevel(*logLevel)
+func initLogging(level string) error {
+	lvl, err := log.ParseLevel(level)
 	if err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func initLogging() error {
 func main() {
 	flag.Parse()
 
-	if err := initLogging(); err != nil {
+	if err := initLogging(*logLevel); err != nil {
 		log.Fatalf("error setting log level: %v", err)
 	}
 
