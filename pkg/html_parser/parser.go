@@ -27,17 +27,6 @@ func (p *WebHTMLParser) GetPageLinks(url string) ([]string, error) {
 	return p.getHTMLDocLinks(htmlDoc), nil
 }
 
-// getHrefAttrValue returns the value of the "href" attribute of the HTML node.
-// If the "href" attribute is not present, it returns an empty string.
-func (p *WebHTMLParser) getHrefAttrValue(htmlNode *html.Node) string {
-	for _, attr := range htmlNode.Attr {
-		if attr.Key == HTMLTagLinkHrefAttr {
-			return strings.TrimSpace(attr.Val)
-		}
-	}
-	return ""
-}
-
 // getHTMLDocLinks returns all the links in the HTML document.
 // It recursively traverses the HTML document structure and returns all the
 // links as given in the "href" attribute of the "<a ...> HTML tag.
@@ -57,4 +46,15 @@ func (p *WebHTMLParser) getHTMLDocLinks(htmlNode *html.Node) []string {
 		}
 	}
 	return links
+}
+
+// getHrefAttrValue returns the value of the "href" attribute of the HTML node.
+// If the "href" attribute is not present, it returns an empty string.
+func (p *WebHTMLParser) getHrefAttrValue(htmlNode *html.Node) string {
+	for _, attr := range htmlNode.Attr {
+		if attr.Key == HTMLTagLinkHrefAttr {
+			return strings.TrimSpace(attr.Val)
+		}
+	}
+	return ""
 }
