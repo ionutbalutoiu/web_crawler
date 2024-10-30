@@ -66,13 +66,12 @@ func (c *Crawler) crawl(url string, depth uint) {
 		return
 	}
 
-	if c.crawledPages.ExistsItem(url) {
-		// the page is already crawled.
+	// Mark the page for crawling, so other goroutines don't crawl it again.
+	marked := c.crawledPages.AddItem(url, []string{})
+	if !marked {
+		// the page was already crawled by another goroutine.
 		return
 	}
-
-	// Mark the page as crawled, so other goroutines don't crawl it again.
-	c.crawledPages.AddItem(url, []string{})
 
 	// Get the page links.
 	pageLinks, err := c.webHTMLParser.GetPageLinks(url)

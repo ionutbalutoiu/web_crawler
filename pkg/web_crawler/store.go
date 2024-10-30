@@ -18,16 +18,22 @@ func NewCrawledPagesStore() Store {
 	}
 }
 
-// GetItems returns all the links in the store.
+// GetItems returns all the crawled pages.
 func (s *CrawledPagesStore) GetItems() map[string][]string {
-	s.m.Lock()
-	defer s.m.Unlock()
 	return s.crawledPages
 }
 
-// AddItem add the links of a page in the store.
-func (s *CrawledPagesStore) AddItem(pageUrl string, pageLinks []string) {
-	s.UpdateItem(pageUrl, pageLinks)
+// AddItem adds a new crawled page to the store.
+// It returns true, if the page is successfully added to the store.
+// Otherwise, the function returns false, without doing anything else.
+func (s *CrawledPagesStore) AddItem(pageUrl string, pageLinks []string) bool {
+	s.m.Lock()
+	defer s.m.Unlock()
+	if s.ExistsItem(pageUrl) {
+		return false
+	}
+	s.crawledPages[pageUrl] = pageLinks
+	return true
 }
 
 // UpdateItem updates the links of a page in the store.
@@ -39,8 +45,6 @@ func (s *CrawledPagesStore) UpdateItem(pageUrl string, pageLinks []string) {
 
 // ExistsItem returns true if the page URL exists in the store.
 func (s *CrawledPagesStore) ExistsItem(pageUrl string) bool {
-	s.m.Lock()
-	defer s.m.Unlock()
 	_, ok := s.crawledPages[pageUrl]
 	return ok
 }
