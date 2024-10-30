@@ -8,7 +8,8 @@ CMD_DIR="${DIR}/../cmd"
 
 mkdir -p $BUILD_DIR
 
-BIN_PATH="$(realpath ${BUILD_DIR}/web_crawler)"
+echo "Building web_crawler"
+go build -o ${BUILD_DIR}/web_crawler -ldflags="-extldflags '-static' -s -w" ${CMD_DIR}/web_crawler
 
-echo "Building web_crawler at: ${BIN_PATH}"
-go build -o ${BIN_PATH} -ldflags="-extldflags '-static' -s -w" ${CMD_DIR}/web_crawler
+BIN_PATH="$(realpath ${BUILD_DIR}/web_crawler)"
+echo "Binary available at: ${BIN_PATH}"
