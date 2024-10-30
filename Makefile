@@ -14,3 +14,8 @@ build-linux-amd64:
 .PHONY: build-darwin-arm64
 build-darwin-arm64:
 	GOOS=darwin GOARCH=arm64 ./scripts/build.sh
+
+# Run unit tests
+.PHONY: test
+test:
+	go test -v -race -timeout=15m -parallel=4 -count=1 ./...
