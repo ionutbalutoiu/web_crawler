@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"sync"
 	"web_crawler/pkg/html_parser"
+	"web_crawler/pkg/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,7 +28,7 @@ func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser
 		return nil, fmt.Errorf("failed to parse base url: %v", err)
 	}
 
-	domain, err := GetHostDomain(baseUrlParsed.Host)
+	domain, err := utils.GetHostDomain(baseUrlParsed.Host)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get host domain from url %s: %v", baseUrl, err)
 	}
@@ -134,7 +135,7 @@ func (c *Crawler) sanitizeLink(link string) string {
 		return ""
 	}
 
-	domain, err := GetHostDomain(linkParsed.Host)
+	domain, err := utils.GetHostDomain(linkParsed.Host)
 	if err != nil {
 		log.Warnf("failed to get host domain from absolut url %s: %v", link, err)
 		return ""

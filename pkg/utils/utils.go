@@ -1,4 +1,4 @@
-package web_crawler
+package utils
 
 import (
 	"net"

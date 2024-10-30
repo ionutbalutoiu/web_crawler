@@ -4,8 +4,7 @@ import (
 	net_url "net/url"
 	"os"
 	"path/filepath"
-
-	"web_crawler/pkg/web_crawler"
+	"web_crawler/pkg/utils"
 
 	"golang.org/x/net/html"
 )
@@ -26,7 +25,7 @@ func (m MockedHTTPClient) LoadPage(url string) (*html.Node, error) {
 		return nil, err
 	}
 
-	domain, err := web_crawler.GetHostDomain(parsedUrl.Host)
+	domain, err := utils.GetHostDomain(parsedUrl.Host)
 	if err != nil {
 		return nil, err
 	}
