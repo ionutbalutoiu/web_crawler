@@ -118,6 +118,26 @@ func (s *CrawlerTestSuite) TestCrawledPages() {
 			err: nil,
 		},
 		{
+			Name:    "Domain_With_Port",
+			BaseUrl: "http://localhost:80",
+			Depth:   1,
+			ExpectedCrawledPages: map[string][]string{
+				"http://localhost:80": {
+					"http://localhost",
+					"http://localhost/path1_1",
+					"http://localhost/path1_2",
+					"http://localhost/path1_3",
+				},
+			},
+			err: nil,
+		},
+		{
+			Name:    "Domain_With_Port_Invalid_Format",
+			BaseUrl: "http://localhost::80",
+			Depth:   1,
+			err:     fmt.Errorf("failed to get host domain from url http://localhost::80: address localhost::80: too many colons in address"),
+		},
+		{
 			Name:    "Different_BaseUrl",
 			BaseUrl: "http://example.com",
 			Depth:   100,
@@ -127,11 +147,10 @@ func (s *CrawlerTestSuite) TestCrawledPages() {
 			err: nil,
 		},
 		{
-			Name:                 "Failed_To_Parse_BaseUrl",
-			BaseUrl:              "dummy-url",
-			Depth:                100,
-			ExpectedCrawledPages: map[string][]string{},
-			err:                  fmt.Errorf("failed to parse base url: parse \"dummy-url\": invalid URI for request"),
+			Name:    "Failed_To_Parse_BaseUrl",
+			BaseUrl: "dummy-url",
+			Depth:   100,
+			err:     fmt.Errorf("failed to parse base url: parse \"dummy-url\": invalid URI for request"),
 		},
 	}
 	for _, tc := range testCases {
