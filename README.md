@@ -115,9 +115,9 @@ This will use a mocked HTTP client to test the web crawler.
 
 These are some of the current limitations of the web crawler implementations:
 
-1. The web crawler spawns a goroutine for each URL it discovers (up to the specified depth). This can lead to a high number of goroutines being created (if crawling depth is high), leading to high resources consumption.
-   1. An elegant solution would be to use a worker pool to limit the number of concurrent goroutines, but this would require a more time for the implementation.
-1. HTTP calls are not retried if they fail. This can lead to incomplete results if a page fails to load.
-   1. HTTP calls can fail due to transient network issues, so it would be beneficial to retry the HTTP calls a few times before giving up. This is crucial for a production-ready web crawler.
-1. The web crawler needs to have a throttling mechanism to prevent it from overwhelming the target website.
-   1. A throttling mechanism would prevent the web crawler from making too many requests in a short period, which can lead to the target website blocking / rate-limiting the crawler.
+1. The web crawler spawns a goroutine for each URL it discovers (up to the specified depth). This can result in a high number of goroutines being created, leading to significant resource consumption.
+   1. A more elegant solution would be to use a worker pool to limit the number of concurrent goroutines, though this would require additional implementation time.
+1. HTTP calls are not retried if they fail, which can result in incomplete results if a page fails to load.
+   1. Since HTTP calls can fail due to transient network issues, it would be beneficial to retry the calls a few times before giving up. This is crucial for a production-ready web crawler.
+1. The web crawler needs a throttling mechanism to prevent it from overwhelming the target website.
+   1. A throttling mechanism would prevent the crawler from making too many requests in a short period, which could lead to the target website blocking or rate-limiting the crawler.
