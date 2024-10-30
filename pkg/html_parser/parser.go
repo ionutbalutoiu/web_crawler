@@ -53,7 +53,20 @@ func (p *WebHTMLParser) getHTMLDocLinks(htmlNode *html.Node) []string {
 func (p *WebHTMLParser) getHrefAttrValue(htmlNode *html.Node) string {
 	for _, attr := range htmlNode.Attr {
 		if attr.Key == HTMLTagLinkHrefAttr {
-			return strings.TrimSpace(attr.Val)
+			// Trim the leading and trailing spaces from the attribute value.
+			link := strings.TrimSpace(attr.Val)
+			// Trim the following trailing characters from the link:
+			// - "/" (slashes)
+			// - "#"
+			// - "%23" (which is "#" encoded).
+			// - "?" (empty query parameters)
+			for strings.HasSuffix(link, "/") || strings.HasSuffix(link, "#") || strings.HasSuffix(link, "%23") || strings.HasSuffix(link, "?") {
+				link = strings.TrimSuffix(link, "/")
+				link = strings.TrimSuffix(link, "#")
+				link = strings.TrimSuffix(link, "%23")
+				link = strings.TrimSuffix(link, "?")
+			}
+			return link
 		}
 	}
 	return ""

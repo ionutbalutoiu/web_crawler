@@ -1,7 +1,9 @@
 package web_crawler
 
-// Generic interface for a store of items
+// Generic interface for a store of crawled pages, and their URLs.
 type Store interface {
-	GetItems() []string
-	AddItem(item string) bool
+	GetItems() map[string][]string
+	AddItem(pageUrl string, pageLinks []string)
+	UpdateItem(pageUrl string, pageLinks []string)
+	ExistsItem(pageUrl string) bool
 }

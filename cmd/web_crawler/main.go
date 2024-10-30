@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"web_crawler/pkg/html_parser"
@@ -10,9 +11,10 @@ import (
 )
 
 var (
-	logLevel = flag.String("log-level", "info", "Log level")
-	baseUrl  = flag.String("url", "https://monzo.com", "Base URL to crawl (default: https://monzo.com)")
-	depth    = flag.Uint("depth", 3, "Crawl depth (default: 3)")
+	baseUrl      = flag.String("url", "https://monzo.com", "Base URL to crawl (default: https://monzo.com)")
+	depth        = flag.Uint("depth", 3, "Crawl depth (default: 3)")
+	logLevel     = flag.String("log-level", "info", "Log level")
+	outputFormat = flag.String("output", "shell", "Output format (default: shell). Valid values shell, json")
 )
 
 func initLogging() error {
@@ -39,11 +41,29 @@ func main() {
 		log.Fatalf("error creating web crawler: %v", err)
 	}
 
-	fmt.Printf("Crawling page %s with depth %d\n", *baseUrl, *depth)
+	// Start crawling
 	webCrawler.StartCrawling()
 
-	fmt.Println("Links crawled:")
-	for _, link := range webCrawler.GetCrawledPages() {
-		fmt.Println(link)
+	// Get the crawled pages
+	crawledPages := webCrawler.GetCrawledPages()
+
+	switch *outputFormat {
+	case "shell":
+		fmt.Println("Pages crawled:")
+		for page, links := range crawledPages {
+			fmt.Printf("Page URL: %s\n", page)
+			if len(links) > 0 {
+				fmt.Printf("Page Links:\n")
+				for _, link := range links {
+					fmt.Printf(" - %s\n", link)
+				}
+			}
+		}
+	case "json":
+		jsonOutput, err := json.MarshalIndent(crawledPages, "", "  ")
+		if err != nil {
+			log.Fatalf("error marshalling JSON: %v", err)
+		}
+		fmt.Println(string(jsonOutput))
 	}
 }

@@ -39,7 +39,7 @@ func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser
 		baseUrlDomain: domain,
 		depth:         depth,
 
-		crawledPages:  NewPagesLinksStore(),
+		crawledPages:  NewCrawledPagesStore(),
 		webHTMLParser: webHTMLParser,
 	}
 	return crawler, nil
@@ -53,7 +53,7 @@ func (c *Crawler) StartCrawling() {
 }
 
 // GetCrawledPages returns the list of crawled pages from the base url.
-func (c *Crawler) GetCrawledPages() []string {
+func (c *Crawler) GetCrawledPages() map[string][]string {
 	return c.crawledPages.GetItems()
 }
 
@@ -66,19 +66,27 @@ func (c *Crawler) crawl(url string, depth uint) {
 		return
 	}
 
-	if !c.crawledPages.AddItem(url) {
-		// the url was already crawled.
-		log.Debugf("url %s was already crawled", url)
+	if c.crawledPages.ExistsItem(url) {
+		// the page is already crawled.
 		return
 	}
 
+	// Mark the page as crawled, so other goroutines don't crawl it again.
+	c.crawledPages.AddItem(url, []string{})
+
+	// Get the page links.
 	pageLinks, err := c.webHTMLParser.GetPageLinks(url)
 	if err != nil {
 		log.Warnf("failed to get %s page links: %v", url, err)
 		return
 	}
+	sanitizedLinks := c.getSanitizedLinks(pageLinks)
 
-	for _, link := range c.getSanitizedLinks(pageLinks) {
+	// Add the page links to the crawled page URL.
+	c.crawledPages.UpdateItem(url, sanitizedLinks)
+
+	// Recursively crawl the page links.
+	for _, link := range sanitizedLinks {
 		c.wg.Add(1)
 		go c.crawl(link, depth-1)
 	}
