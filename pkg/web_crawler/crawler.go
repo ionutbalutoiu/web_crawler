@@ -12,9 +12,9 @@ import (
 type Crawler struct {
 	wg sync.WaitGroup
 
-	baseUrl     string
-	validDomain string
-	depth       uint
+	baseUrl       string
+	baseUrlDomain string
+	depth         uint
 
 	crawledPages  Store
 	webHTMLParser html_parser.HTMLParser
@@ -35,9 +35,9 @@ func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser
 	crawler := &Crawler{
 		wg: sync.WaitGroup{},
 
-		baseUrl:     baseUrl,
-		validDomain: domain,
-		depth:       depth,
+		baseUrl:       baseUrl,
+		baseUrlDomain: domain,
+		depth:         depth,
 
 		crawledPages:  NewPagesLinksStore(),
 		webHTMLParser: webHTMLParser,
@@ -133,7 +133,7 @@ func (c *Crawler) sanitizeLink(link string) string {
 		return ""
 	}
 
-	if domain == c.validDomain {
+	if domain == c.baseUrlDomain {
 		return link
 	}
 
