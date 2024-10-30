@@ -14,7 +14,7 @@ import (
 type CrawlerTestSuite struct {
 	suite.Suite
 
-	mockedHtmlParser *html_parser.HTMLParser
+	htmlParser html_parser.HTMLParser
 }
 
 func (s *CrawlerTestSuite) SetupTest() {
@@ -23,9 +23,7 @@ func (s *CrawlerTestSuite) SetupTest() {
 		s.FailNow("error getting test data path: %v", err)
 	}
 	mockedHttpClient := mocks.NewMockedHTTPClient(testDataDir)
-	mockedHtmlParser := html_parser.NewWebHTMLParser(mockedHttpClient)
-
-	s.mockedHtmlParser = &mockedHtmlParser
+	s.htmlParser = html_parser.NewWebHTMLParser(mockedHttpClient)
 }
 
 func (s *CrawlerTestSuite) TestCrawledPages() {
@@ -155,7 +153,7 @@ func (s *CrawlerTestSuite) TestCrawledPages() {
 	}
 	for _, tc := range testCases {
 		s.Run(tc.Name, func() {
-			crawler, err := web_crawler.NewCrawler(tc.BaseUrl, tc.Depth, *s.mockedHtmlParser)
+			crawler, err := web_crawler.NewCrawler(tc.BaseUrl, tc.Depth, s.htmlParser)
 			s.Equal(tc.err, err)
 			if err == nil {
 				crawler.StartCrawling()
@@ -163,7 +161,6 @@ func (s *CrawlerTestSuite) TestCrawledPages() {
 				s.Equal(tc.ExpectedCrawledPages, pages)
 			}
 		})
-
 	}
 }
 
