@@ -14,7 +14,7 @@ var (
 	baseUrl      = flag.String("url", "https://monzo.com", "Base URL to crawl (default: https://monzo.com)")
 	depth        = flag.Uint("depth", 3, "Crawl depth (default: 3)")
 	logLevel     = flag.String("log-level", "info", "Log level")
-	outputFormat = flag.String("output", "shell", "Output format (default: shell). Valid values shell, json")
+	outputFormat = flag.String("output", "json", "Output format (default: json). Valid values json, plaintext")
 )
 
 func initLogging() error {
@@ -48,7 +48,7 @@ func main() {
 	crawledPages := webCrawler.GetCrawledPages()
 
 	switch *outputFormat {
-	case "shell":
+	case "plaintext":
 		fmt.Println("Pages crawled:")
 		for page, links := range crawledPages {
 			fmt.Printf("Page URL: %s\n", page)
