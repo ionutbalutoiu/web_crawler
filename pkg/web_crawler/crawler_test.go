@@ -18,7 +18,7 @@ type CrawlerTestSuite struct {
 }
 
 func (s *CrawlerTestSuite) SetupTest() {
-	testDataDir, err := filepath.Abs(filepath.Join("..", "..", "testdata", "mocks", "http_client"))
+	testDataDir, err := filepath.Abs(filepath.Join("..", "..", "internal", "mocks", "testdata"))
 	if err != nil {
 		s.FailNow("error getting test data path: %v", err)
 	}
