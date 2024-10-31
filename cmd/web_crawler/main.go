@@ -13,7 +13,7 @@ import (
 var (
 	baseUrl      = flag.String("url", "https://monzo.com", "Base URL to crawl (default: https://monzo.com)")
 	depth        = flag.Uint("depth", 3, "Crawl depth (default: 3)")
-	logLevel     = flag.String("log-level", "info", "Log level (default: info). Valid values: trace, debug, info, warn, error, fatal, panic")
+	logLevel     = flag.String("log-level", "error", "Log level (default: error). Valid values: trace, debug, info, warn, error, fatal, panic")
 	outputFormat = flag.String("output", "json", "Output format (default: json). Valid values: json, plaintext")
 )
 
