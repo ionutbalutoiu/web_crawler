@@ -27,9 +27,9 @@ Usage of ./build/web_crawler:
   -depth uint
         Crawl depth (default: 3) (default 3)
   -log-level string
-        Log level (default "info")
+        Log level (default: error). Valid values: trace, debug, info, warn, error, fatal, panic (default "error")
   -output string
-        Output format (default: shell). Valid values shell, json (default "shell")
+        Output format (default: json). Valid values: json, plaintext (default "json")
   -url string
         Base URL to crawl (default: https://monzo.com) (default "https://monzo.com")
 ```
