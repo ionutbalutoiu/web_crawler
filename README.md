@@ -2,6 +2,13 @@
 
 This is a simple web crawler, written in Go, that navigates a website URL and prints the URLs it discovers on the page. It recursively crawls page URLs up to a specified depth.
 
+- [Go Web Crawler](#go-web-crawler)
+  - [Build](#build)
+  - [Usage](#usage)
+    - [Examples](#examples)
+  - [Tests](#tests)
+  - [Limitations / Trade-offs](#limitations--trade-offs)
+
 ## Build
 
 To build the project, run the following command:
@@ -113,7 +120,7 @@ This will use a mocked HTTP client to test the web crawler.
 
 ## Limitations / Trade-offs
 
-These are some of the current limitations of the web crawler implementations:
+Here are some of the current limitations of the web crawler implementations:
 
 1. The web crawler spawns a goroutine for each URL it discovers (up to the specified depth). This can result in a high number of goroutines being created, leading to significant resource consumption.
    1. A more elegant solution would be to use a worker pool to limit the number of concurrent goroutines, though this would require additional implementation time.
