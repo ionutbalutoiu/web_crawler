@@ -23,7 +23,8 @@ func (w WebClient) LoadPage(url string) (*html.Node, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	// Check for non-200 status code
+	if resp.StatusCode/100 != 2 {
 		return nil, fmt.Errorf("failed to get %s url: got status code %d)", url, resp.StatusCode)
 	}
 
