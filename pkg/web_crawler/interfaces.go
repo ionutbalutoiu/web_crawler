@@ -5,5 +5,6 @@ type Store interface {
 	GetItems() map[string][]string
 	AddItem(pageUrl string, pageLinks []string) bool
 	UpdateItem(pageUrl string, pageLinks []string)
+	RemoveItem(pageUrl string)
 	ExistsItem(pageUrl string) bool
 }

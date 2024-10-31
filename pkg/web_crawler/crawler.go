@@ -79,6 +79,7 @@ func (c *Crawler) crawl(url string, depth uint) {
 	pageLinks, err := c.webHTMLParser.GetPageLinks(url)
 	if err != nil {
 		log.Warnf("failed to get %s page links: %v", url, err)
+		c.crawledPages.RemoveItem(url)
 		return
 	}
 	sanitizedLinks := c.getSanitizedLinks(pageLinks)

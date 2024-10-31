@@ -43,6 +43,13 @@ func (s *CrawledPagesStore) UpdateItem(pageUrl string, pageLinks []string) {
 	s.crawledPages[pageUrl] = pageLinks
 }
 
+// RemoveItem removes a page from the store.
+func (s *CrawledPagesStore) RemoveItem(pageUrl string) {
+	s.m.Lock()
+	defer s.m.Unlock()
+	delete(s.crawledPages, pageUrl)
+}
+
 // ExistsItem returns true if the page URL exists in the store.
 func (s *CrawledPagesStore) ExistsItem(pageUrl string) bool {
 	_, ok := s.crawledPages[pageUrl]
