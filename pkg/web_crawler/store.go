@@ -14,7 +14,7 @@ type CrawledPagesStore struct {
 func NewCrawledPagesStore() Store {
 	return &CrawledPagesStore{
 		m:            sync.Mutex{},
-		crawledPages: make(map[string][]string),
+		crawledPages: map[string][]string{},
 	}
 }
 

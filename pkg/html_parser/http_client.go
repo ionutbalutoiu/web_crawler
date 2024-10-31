@@ -10,12 +10,12 @@ import (
 // WebClient is an implementation of the HTTPClient interface.
 type WebClient struct{}
 
-// NewWebClient creates a new WebClient instance (which implements HTTPClient interface).
+// NewWebClient creates a new WebClient instance.
 func NewWebClient() HTTPClient {
 	return &WebClient{}
 }
 
-// LoadPage loads the HTML page from the given URL and returns the parsed HTML node.
+// LoadPage loads the HTML page from the given URL (by doing HTTP GET), and returns the parsed HTML node.
 func (w WebClient) LoadPage(url string) (*html.Node, error) {
 	resp, err := http.Get(url)
 	if err != nil {

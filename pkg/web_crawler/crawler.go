@@ -46,16 +46,16 @@ func NewCrawler(baseUrl string, depth uint, webHTMLParser html_parser.HTMLParser
 	return crawler, nil
 }
 
+// GetCrawledPages returns the list of crawled pages from the base url.
+func (c *Crawler) GetCrawledPages() map[string][]string {
+	return c.crawledPages.GetItems()
+}
+
 // StartCrawling starts the web crawling process.
 func (c *Crawler) StartCrawling() {
 	c.wg.Add(1)
 	go c.crawl(c.baseUrl, c.depth)
 	c.wg.Wait()
-}
-
-// GetCrawledPages returns the list of crawled pages from the base url.
-func (c *Crawler) GetCrawledPages() map[string][]string {
-	return c.crawledPages.GetItems()
 }
 
 // crawl recursively crawls the web pages starting from an url, with a maximum depth.
@@ -71,6 +71,7 @@ func (c *Crawler) crawl(url string, depth uint) {
 	marked := c.crawledPages.AddItem(url, []string{})
 	if !marked {
 		// the page was already crawled by another goroutine.
+		log.Debugf("page %s was already crawled", url)
 		return
 	}
 
@@ -82,10 +83,10 @@ func (c *Crawler) crawl(url string, depth uint) {
 	}
 	sanitizedLinks := c.getSanitizedLinks(pageLinks)
 
-	// Add the page links to the crawled page URL.
+	// Add the discovered page links to the crawled page from store.
 	c.crawledPages.UpdateItem(url, sanitizedLinks)
 
-	// Recursively crawl the page links.
+	// Crawl the page links one depth level further.
 	for _, link := range sanitizedLinks {
 		c.wg.Add(1)
 		go c.crawl(link, depth-1)
@@ -105,11 +106,11 @@ func (c *Crawler) getSanitizedLinks(links []string) []string {
 }
 
 // sanitizeLink returns the sanitized link.
-// A link is considered sanitized if it's a relative link, or an absolute link
+// A link is considered valid if it's a relative link, or an absolute link
 // from the same domain. If the link doesn't meet these conditions, it's
 // considered invalid and an empty string is returned.
 func (c *Crawler) sanitizeLink(link string) string {
-	// NOTE: "url.Parse" provides a weaker URL parsing than "url.ParseRequestURI".
+	// NOTE: "url.Parse" provides a weaker URL parsing than "url.ParseRequestURI", used below.
 	// We will use this to determine if the link is relative or absolute.
 	linkParsed, err := url.Parse(link)
 	if err != nil {
@@ -126,9 +127,9 @@ func (c *Crawler) sanitizeLink(link string) string {
 		}
 	}
 
-	// NOTE: This is a stronger URL parsing than "url.Parse". We will use this
-	// to validate that we are only crawling links from the same domain.
-	// It also provides a better way to validate that we have a valid link.
+	// NOTE: Function "url.ParseRequestURI" is a stronger URL parsing method.
+	// We will use this to validate that we are only crawling links from the
+	// same domain. It also provides a way to validate that we have a valid URL.
 	linkParsed, err = url.ParseRequestURI(link)
 	if err != nil {
 		log.Warnf("link %s failed url.ParseRequestURI: %v", link, err)
@@ -137,7 +138,7 @@ func (c *Crawler) sanitizeLink(link string) string {
 
 	domain, err := utils.GetHostDomain(linkParsed.Host)
 	if err != nil {
-		log.Warnf("failed to get host domain from absolut url %s: %v", link, err)
+		log.Warnf("failed to get host domain from absolute url %s: %v", link, err)
 		return ""
 	}
 
